@@ -89,16 +89,14 @@ def index(request: HttpRequest) -> HttpResponse:
         try:
             if request.POST.get("generate_dummy_consultation") is not None:
                 consultation = create_dummy_consultation_from_yaml()
-                user = request.user
-                consultation.users.add(user)
+                # Skip user assignment for demo - no authentication
                 messages.success(request, "A dummy consultation has been generated")
             elif request.POST.get("generate_giant_dummy_consultation") is not None:
                 n = 10000
                 consultation = models.Consultation.objects.create(
                     title=f"Giant dummy consultation - {n} respondents, with theme changes"
                 )
-                user = request.user
-                consultation.users.add(user)
+                # Skip user assignment for demo - no authentication
                 create_dummy_consultation_from_yaml_job.delay(
                     number_respondents=n, include_changes_to_themes=True, consultation=consultation
                 )
@@ -227,7 +225,7 @@ def import_consultation_view(request: HttpRequest) -> HttpResponse:
                 consultation_name=consultation_name,
                 consultation_code=consultation_code,
                 timestamp=timestamp,
-                current_user_id=request.user.id,
+                current_user_id=1,  # Use dummy user ID for demo
             )
             messages.success(request, f"Import started for consultation: {consultation_name}")
             return redirect("support_consultations")  # Fixed URL name
