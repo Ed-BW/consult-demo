@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Force Railway deployment update - v2
 # Set default values for environment variables
 export PORT=${PORT:-8080}
 export GUNICORN_WORKERS=${GUNICORN_WORKERS:-1}
@@ -9,6 +10,7 @@ echo "=== Railway Deployment Debug Info ==="
 echo "PORT environment variable: $PORT"
 echo "RAILWAY_ENVIRONMENT: $RAILWAY_ENVIRONMENT"
 echo "Starting Django application on port $PORT with $GUNICORN_WORKERS workers"
+echo "Deployment version: v2 - test scripts removed"
 echo "====================================="
 
 # Run Django migrations and setup
