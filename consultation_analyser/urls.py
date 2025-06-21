@@ -20,7 +20,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.urls import include, path
 
-from consultation_analyser.consultations import urls
+from consultation_analyser.consultations import urls, models
 from consultation_analyser.error_pages import views as error_views
 from consultation_analyser.support_console import urls as support_console_urls
 
@@ -31,8 +31,19 @@ def health_check(request):
     """Simple health check endpoint for Railway"""
     return HttpResponse("OK - Django application is running", content_type="text/plain")
 
+def debug_consultations(request):
+    """Debug endpoint to show available consultations"""
+    consultations = models.Consultation.objects.all()
+    output = ["Available consultations:"]
+    for c in consultations:
+        output.append(f"- Title: '{c.title}' | Slug: '{c.slug}' | URL: /consultations/{c.slug}/")
+    if not consultations:
+        output.append("No consultations found in database!")
+    return HttpResponse("\n".join(output), content_type="text/plain")
+
 urlpatterns = [
     path("health/", health_check, name="health_check"),
+    path("debug/consultations/", debug_consultations, name="debug_consultations"),
     path("", include(urls)),
     path("support/", include(support_console_urls)),
     path("admin/", include(support_console_urls)),  # Demo: Allow admin access via /admin/
