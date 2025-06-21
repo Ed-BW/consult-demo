@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "consultation_analyser.settings.local")
+# Use production settings by default, but allow override via environment variable
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "consultation_analyser.settings.production")
 
 application = get_wsgi_application()

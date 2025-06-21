@@ -17,6 +17,7 @@ Including another URLconf
 
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.conf import settings
+from django.http import HttpResponse
 from django.urls import include, path
 
 from consultation_analyser.consultations import urls
@@ -26,7 +27,12 @@ from consultation_analyser.support_console import urls as support_console_urls
 handler404 = error_views.error_404
 handler500 = error_views.error_500
 
+def health_check(request):
+    """Simple health check endpoint for Railway"""
+    return HttpResponse("OK - Django application is running", content_type="text/plain")
+
 urlpatterns = [
+    path("health/", health_check, name="health_check"),
     path("", include(urls)),
     path("support/", include(support_console_urls)),
 ]
