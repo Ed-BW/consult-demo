@@ -40,8 +40,13 @@ COPY --from=poetry-packages /src/venv ./venv
 
 COPY . .
 
+# Set up environment for the virtual environment
+ENV PATH="/usr/src/app/venv/bin:$PATH"
 ENV DJANGO_SETTINGS_MODULE='consultation_analyser.settings.production'
-ENV PYTHONPATH "${PYTHONPATH}:/."
+ENV PYTHONPATH "${PYTHONPATH}:/usr/src/app"
+
+# Make start script executable
+RUN chmod +x start.sh
 
 EXPOSE 8000
 
