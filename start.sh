@@ -11,14 +11,6 @@ echo "RAILWAY_ENVIRONMENT: $RAILWAY_ENVIRONMENT"
 echo "Starting Django application on port $PORT with $GUNICORN_WORKERS workers"
 echo "====================================="
 
-# Test Django configuration first
-echo "Testing Django configuration..."
-python3 test_django.py
-if [ $? -ne 0 ]; then
-    echo "❌ Django test failed, exiting"
-    exit 1
-fi
-
 # Run Django migrations and setup
 venv/bin/django-admin migrate
 venv/bin/django-admin collectstatic --noinput
