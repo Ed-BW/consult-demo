@@ -68,8 +68,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "waffle.middleware.WaffleMiddleware",
-    "consultation_analyser.middleware.LoginRequiredMiddleware404",
-    "consultation_analyser.middleware.SupportAppStaffRequiredMiddleware",
+    # "consultation_analyser.middleware.LoginRequiredMiddleware404",  # Disabled for demo
+    # "consultation_analyser.middleware.SupportAppStaffRequiredMiddleware",  # Disabled for demo
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
 

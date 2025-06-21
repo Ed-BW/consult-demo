@@ -100,7 +100,7 @@ def app_config(request: HttpRequest):
                 menu_items=menu_items,
             )
 
-    else:  # non-authenticated user
+    else:  # non-authenticated user (demo mode)
         app_config = AppConfig(
             name="Consult",
             path="/",
@@ -121,9 +121,9 @@ def app_config(request: HttpRequest):
                     "active": request.path == "/get-involved/",
                 },
                 {
-                    "href": "/sign-in/",
-                    "text": "Sign in",
-                    "active": request.path == "/sign-in/",
+                    "href": "/consultations/",
+                    "text": "View Demo",
+                    "active": request.path.startswith("/consultations"),
                     "classes": "x-govuk-primary-navigation__item--right",
                 },
             ],
