@@ -35,6 +35,7 @@ urlpatterns = [
     path("health/", health_check, name="health_check"),
     path("", include(urls)),
     path("support/", include(support_console_urls)),
+    path("admin/", include(support_console_urls)),  # Demo: Allow admin access via /admin/
 ]
 
 if settings.DEBUG:
