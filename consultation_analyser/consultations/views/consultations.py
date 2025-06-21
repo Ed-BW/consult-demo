@@ -15,10 +15,19 @@ logger = logging.getLogger("upload")
 
 def index(request: HttpRequest) -> HttpResponse:
     user = request.user
-    consultations_for_user = models.Consultation.objects.filter(users=user)
+    
+    # For demo: show all consultations if user is not authenticated
+    if user.is_authenticated:
+        consultations_for_user = models.Consultation.objects.filter(users=user)
+        user_has_dashboard_access = user.has_dashboard_access
+    else:
+        # Demo mode: show all consultations
+        consultations_for_user = models.Consultation.objects.all()
+        user_has_dashboard_access = True  # Enable dashboard access for demo
+    
     context = {
         "consultations": consultations_for_user,
-        "user_has_dashboard_access": user.has_dashboard_access,
+        "user_has_dashboard_access": user_has_dashboard_access,
     }
     return render(request, "consultations/consultations/index.html", context)
 
