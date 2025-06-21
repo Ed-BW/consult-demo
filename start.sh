@@ -10,16 +10,13 @@ echo "=== Railway Deployment Debug Info ==="
 echo "PORT environment variable: $PORT"
 echo "RAILWAY_ENVIRONMENT: $RAILWAY_ENVIRONMENT"
 echo "Starting Django application on port $PORT with $GUNICORN_WORKERS workers"
-echo "Deployment version: v2 - test scripts removed"
+echo "Deployment version: v3 - skip slow dummy data generation"
 echo "====================================="
 
 # Run Django migrations and setup
 venv/bin/django-admin migrate
 venv/bin/django-admin collectstatic --noinput
 venv/bin/django-admin compress --force --engine jinja2
-
-# Generate demo data if database is empty
-venv/bin/django-admin generate_dummy_data || echo "Demo data generation failed or already exists"
 
 echo "Starting gunicorn server..."
 echo "Binding to 0.0.0.0:$PORT"
