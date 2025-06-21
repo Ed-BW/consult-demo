@@ -215,16 +215,20 @@ WAFFLE_LOG_MISSING_SWITCHES = logging.INFO
 CRISPY_ALLOWED_TEMPLATE_PACKS = "gds"
 CRISPY_TEMPLATE_PACK = "gds"
 
-# Email
-EMAIL_BACKEND = "django_gov_notify.backends.NotifyEmailBackend"
-GOVUK_NOTIFY_API_KEY = env("GOVUK_NOTIFY_API_KEY")
-GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = env("GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID")
+# Email - use console backend for demo if notify keys are not provided
+GOVUK_NOTIFY_API_KEY = env("GOVUK_NOTIFY_API_KEY", default="")
+GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = env("GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID", default="")
 
-# AWS variables
+if GOVUK_NOTIFY_API_KEY and GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID:
+    EMAIL_BACKEND = "django_gov_notify.backends.NotifyEmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# AWS variables - make them optional for demo
 BATCH_JOB_QUEUE = env("BATCH_JOB_QUEUE", default=None)
 BATCH_JOB_DEFINITION = env("BATCH_JOB_DEFINITION", default=None)
-AWS_REGION = env("AWS_REGION")
-AWS_BUCKET_NAME = env("AWS_BUCKET_NAME")
+AWS_REGION = env("AWS_REGION", default="us-east-1")
+AWS_BUCKET_NAME = env("AWS_BUCKET_NAME", default="local")
 
 
 # Authentication

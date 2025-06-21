@@ -3,17 +3,27 @@ from django.conf.global_settings import STORAGES
 
 from consultation_analyser.settings.base import *  # noqa
 
-CSRF_TRUSTED_ORIGINS = ["https://" + env("DOMAIN_NAME")]  # noqa: F405
+# Handle DOMAIN_NAME gracefully
+DOMAIN_NAME = env("DOMAIN_NAME", default="web-production-dbf3.up.railway.app")
+CSRF_TRUSTED_ORIGINS = ["https://" + DOMAIN_NAME]
 
-SENTRY_DSN = env("SENTRY_DSN")  # noqa: F405
-EXECUTION_CONTEXT = env("EXECUTION_CONTEXT")  # noqa: F405
-GIT_SHA = env("GIT_SHA")  # noqa: F405
+# Handle Sentry configuration gracefully
+SENTRY_DSN = env("SENTRY_DSN", default="")
+EXECUTION_CONTEXT = env("EXECUTION_CONTEXT", default="railway")
+GIT_SHA = env("GIT_SHA", default="unknown")
 
-
-STORAGES["default"] = {  # noqa: F405
-    "BACKEND": "storages.backends.s3.S3Storage",
-    "OPTIONS": {"bucket_name": env("APP_BUCKET"), "location": "app_data/"},  # noqa: F405
-}
+# Handle S3 storage gracefully - only configure if APP_BUCKET is provided
+APP_BUCKET = env("APP_BUCKET", default="")
+if APP_BUCKET:
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {"bucket_name": APP_BUCKET, "location": "app_data/"},
+    }
+else:
+    # Use local file storage if no S3 bucket is configured
+    STORAGES["default"] = {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    }
 
 
 def sentry_before_send(event, hint):
