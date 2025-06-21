@@ -6,7 +6,7 @@ from factory import fuzzy
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from consultation_analyser.authentication.models import User
+from django.contrib.auth.models import User
 from consultation_analyser.consultations import models
 
 fake = Faker()

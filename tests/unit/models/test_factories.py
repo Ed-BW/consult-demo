@@ -5,7 +5,7 @@ Test factories for the new consultation models.
 import pytest
 
 from consultation_analyser import factories
-from consultation_analyser.authentication.models import User
+from django.contrib.auth.models import User
 from consultation_analyser.consultations import models
 
 

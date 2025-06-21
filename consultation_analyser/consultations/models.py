@@ -7,7 +7,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 
-from consultation_analyser.authentication.models import User
+from django.contrib.auth.models import User
 
 faker = _faker.Faker()
 

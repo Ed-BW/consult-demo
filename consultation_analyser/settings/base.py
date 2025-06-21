@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "waffle",  # feature flags
     "magic_link",
-    "consultation_analyser.authentication",
     "consultation_analyser.consultations",
     "consultation_analyser.support_console",
     "consultation_analyser.error_pages",
@@ -105,8 +104,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "consultation_analyser.wsgi.application"
-
-AUTH_USER_MODEL = "authentication.User"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

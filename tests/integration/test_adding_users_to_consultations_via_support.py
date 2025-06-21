@@ -1,6 +1,6 @@
 import pytest
 
-from consultation_analyser.authentication.models import User
+from django.contrib.auth.models import User
 from consultation_analyser.consultations.models import Consultation
 from consultation_analyser.factories import UserFactory
 from tests.helpers import sign_in

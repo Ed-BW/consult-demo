@@ -3,7 +3,7 @@ from crispy_forms_gds.layout import Button, Layout
 from django import forms
 from django.core.exceptions import ValidationError
 
-from consultation_analyser.authentication.models import User
+from django.contrib.auth.models import User
 
 
 def validate_unique_email(value):

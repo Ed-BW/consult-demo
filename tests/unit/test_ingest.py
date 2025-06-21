@@ -165,7 +165,7 @@ class TestImportConsultation:
     @patch("consultation_analyser.support_console.ingest.get_question_folders")
     @patch("consultation_analyser.support_console.ingest.settings")
     def test_import_consultation_success(self, mock_settings, mock_get_folders, mock_boto3):
-        from consultation_analyser.authentication.models import User
+        from django.contrib.auth.models import User
 
         # Create test user
         user = User.objects.create_user(email="test@example.com")
@@ -256,7 +256,7 @@ class TestImportConsultation:
     @patch("consultation_analyser.support_console.ingest.boto3")
     @patch("consultation_analyser.support_console.ingest.settings")
     def test_import_consultation_s3_error(self, mock_settings, mock_boto3):
-        from consultation_analyser.authentication.models import User
+        from django.contrib.auth.models import User
 
         user = User.objects.create_user(email="test@example.com")
         mock_settings.AWS_BUCKET_NAME = "test-bucket"
@@ -281,7 +281,7 @@ class TestImportConsultation:
     def test_import_consultation_missing_question_text(
         self, mock_settings, mock_get_folders, mock_boto3
     ):
-        from consultation_analyser.authentication.models import User
+        from django.contrib.auth.models import User
 
         user = User.objects.create_user(email="test@example.com")
         mock_settings.AWS_BUCKET_NAME = "test-bucket"

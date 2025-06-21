@@ -196,7 +196,7 @@ def import_consultation(
         consultation = Consultation.objects.create(title=consultation_name)
 
         # Add the current user to the consultation
-        from consultation_analyser.authentication.models import User
+        from django.contrib.auth.models import User
 
         user = User.objects.get(id=current_user_id)
         consultation.users.add(user)

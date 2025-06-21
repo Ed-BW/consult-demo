@@ -2,7 +2,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from consultation_analyser.authentication.models import User
+from django.contrib.auth.models import User
 from consultation_analyser.consultations.models import (
     Consultation,
     Question,

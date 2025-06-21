@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, redirect, render
 
-from consultation_analyser.authentication.models import User
+from django.contrib.auth.models import User
 from consultation_analyser.constants import DASHBOARD_ACCESS
 from consultation_analyser.consultations.models import Consultation
 
