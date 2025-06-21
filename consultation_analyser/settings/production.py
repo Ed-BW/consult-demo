@@ -46,15 +46,15 @@ def sentry_before_send(event, hint):
     return event
 
 
-sentry_sdk.init(
-    dsn=SENTRY_DSN,
-    environment=ENVIRONMENT,  # noqa: F405
-    release=GIT_SHA,
-    before_send=sentry_before_send,
-    traces_sample_rate=1.0,
-    profile_session_sample_rate=1.0,
-    profile_lifecycle="trace",
-)
-
-
-sentry_sdk.set_tags({"execution_context": EXECUTION_CONTEXT})
+# Only initialize Sentry if we have a valid DSN
+if SENTRY_DSN and not SENTRY_DSN.startswith("dummy") and "dummy" not in SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=ENVIRONMENT,  # noqa: F405
+        release=GIT_SHA,
+        before_send=sentry_before_send,
+        traces_sample_rate=1.0,
+        profile_session_sample_rate=1.0,
+        profile_lifecycle="trace",
+    )
+    sentry_sdk.set_tags({"execution_context": EXECUTION_CONTEXT})
