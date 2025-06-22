@@ -258,6 +258,9 @@ class ResponseAnnotationTheme(UUIDPrimaryKeyModel, TimeStampedModel):
     assigned_by = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True
     )  # None for AI, User for human
+    
+    # NEW: Aspect-based sentiment for persona pipeline
+    aspect_sentiment = models.FloatField(null=True, blank=True)  # Per-theme sentiment (-1 to +1)
 
     class Meta(UUIDPrimaryKeyModel.Meta, TimeStampedModel.Meta):
         constraints = [
@@ -359,3 +362,122 @@ class ResponseAnnotation(UUIDPrimaryKeyModel, TimeStampedModel):
             )
 
         super().save(*args, **kwargs)
+
+
+# ============================================================================
+# PERSONA PIPELINE MODELS
+# ============================================================================
+
+
+class PersonaCluster(UUIDPrimaryKeyModel, TimeStampedModel):
+    """AI-generated persona cluster representing a group of similar respondents"""
+
+    consultation = models.ForeignKey(Consultation, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)  # LLM-generated name
+    tagline = models.CharField(max_length=512)  # Brief description
+    description = models.TextField()  # Detailed description
+    size = models.IntegerField()  # Number of respondents in this cluster
+    
+    # Cluster analysis data
+    demographic_profile = models.JSONField(default=dict)  # Aggregate demographics
+    cluster_center = models.JSONField(default=dict)  # FAMD coordinates
+    quality_metrics = models.JSONField(default=dict)  # Silhouette score, etc.
+    
+    # Status tracking
+    generation_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('PENDING', 'Pending'),
+            ('PROCESSING', 'Processing'),
+            ('COMPLETED', 'Completed'),
+            ('FAILED', 'Failed'),
+        ],
+        default='PENDING'
+    )
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta(UUIDPrimaryKeyModel.Meta, TimeStampedModel.Meta):
+        indexes = [
+            models.Index(fields=["consultation", "generation_status"]),
+            models.Index(fields=["last_updated"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["consultation", "name"],
+                name="unique_persona_name_per_consultation"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.size} respondents)"
+
+
+class PersonaTheme(UUIDPrimaryKeyModel, TimeStampedModel):
+    """Theme characteristics for a specific persona cluster"""
+
+    persona = models.ForeignKey(PersonaCluster, on_delete=models.CASCADE)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
+    
+    # Theme analytics for this persona
+    sentiment_score = models.FloatField()  # Average sentiment (-1 to +1)
+    prevalence = models.FloatField()  # Proportion of persona members with this theme (0 to 1)
+    sample_quotes = models.JSONField(default=list)  # Representative quotes
+    
+    # Statistical significance
+    lift = models.FloatField(null=True, blank=True)  # How much more/less likely vs baseline
+    confidence = models.FloatField(null=True, blank=True)  # Statistical confidence
+
+    class Meta(UUIDPrimaryKeyModel.Meta, TimeStampedModel.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=["persona", "theme"],
+                name="unique_persona_theme"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["persona", "-prevalence"]),  # For top themes queries
+            models.Index(fields=["theme", "-lift"]),  # For theme analysis
+        ]
+
+    def __str__(self):
+        return f"{self.persona.name} - {self.theme.name} ({self.prevalence:.1%})"
+
+
+class RespondentPersona(UUIDPrimaryKeyModel, TimeStampedModel):
+    """Links respondents to their assigned persona cluster"""
+
+    respondent = models.ForeignKey(Respondent, on_delete=models.CASCADE)
+    persona_cluster = models.ForeignKey(PersonaCluster, on_delete=models.CASCADE)
+    
+    # Assignment confidence and metadata
+    confidence_score = models.FloatField()  # How well the respondent fits this cluster (0 to 1)
+    feature_vector = models.JSONField(default=dict)  # Preprocessed features used for clustering
+    distance_to_center = models.FloatField(null=True, blank=True)  # Distance from cluster center
+    
+    # Assignment tracking
+    assigned_at = models.DateTimeField(auto_now_add=True)
+    assignment_method = models.CharField(
+        max_length=20,
+        choices=[
+            ('KMEANS', 'K-Means'),
+            ('HDBSCAN', 'HDBSCAN'),
+            ('MANUAL', 'Manual Assignment'),
+        ],
+        default='KMEANS'
+    )
+
+    class Meta(UUIDPrimaryKeyModel.Meta, TimeStampedModel.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=["respondent", "persona_cluster"],
+                name="unique_respondent_persona_assignment"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["persona_cluster", "-confidence_score"]),
+            models.Index(fields=["respondent"]),
+            models.Index(fields=["assigned_at"]),
+        ]
+
+    def __str__(self):
+        return f"Respondent {self.respondent.identifier} → {self.persona_cluster.name}"

@@ -54,6 +54,9 @@ pyflame = "^0.3.2"
 freezegun = "^1.5.2"
 django-test-migrations = "^1.5.0"
 pytest-lazy-fixtures = "^1.1.4"
+scikit-learn = "^1.7.0"
+prince = "^0.16.0"
+hdbscan = "^0.8.40"
 
 [tool.poetry.group.development.dependencies]
 ruff = "^0.12.0"
